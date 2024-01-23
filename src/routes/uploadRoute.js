@@ -1,6 +1,6 @@
 const express = require('express')
-const route = express.Router()
 const multer = require('multer')
+const route = express.Router()
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
         cb(null, './uploads')
@@ -11,23 +11,30 @@ const storage = multer.diskStorage({
         cb(null, file.originalname)
     }
 })
-// const fileFilter = (req, file, cb) =>{
-//     if(file.mimetype === 'image/jpg' || file.mimetype === 'image'){
-//         cb(null, true)
-//     }else{
-//     cb(null, false);
-//     }
-// }
+const fileFilter = (req, file, cb) =>{
+    if(file.mimetype === 'image/jpg' || file.mimetype==='image/png' || file.mimetype === 'image'){
+        cb(null, true)
+    }else{
+    cb(null, false);
+    }
+}
 const uploads = multer({
     storage,
     limits:{
         fileSize: 1024 * 1024 * 5
-    }
+    },
+    fileFilter: fileFilter
 })
 
 route.post('/',uploads.single('imagem'), (req, res)=>{
-    console.log(req.file)
-res.status(200).send({message: 'uploadroute'})
+    const response = {
+        message: "imagem inserida com suscesso!",
+        descricao: "caminho da imagem"
+    } 
+    res.status(200).send({message: response})
+})
+route.get('/',(req, res, next)=>{
+    res.status(200).send({message: 'imagem obtida com sucesso'})
 })
 
 module.exports = route
